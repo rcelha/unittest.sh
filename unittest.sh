@@ -94,6 +94,14 @@ assert_greater_than_or_equal(){
     echo TODO;
 }
 
+assert_in(){
+    echo "${2}" | grep "${1}";
+    if [ $? != 0 ]; then
+        record_error "assert_in: '${1}' not in  '${2}'";
+    fi;
+}
+
+
 _mocked(){
     local cmd=$1;
     shift;
