@@ -18,4 +18,16 @@ test_ls(){
     assert_not_equal $ret 2;
 }
 
-
+test_optparse_calls(){
+    MOCK_OUTPUT=`cat <<EOF
+usr
+bin
+sbin
+EOF
+`;
+    build_mock "ls" "${MOCK_OUTPUT}" 0;
+    ls ~;
+    echo $?
+    unmock ls;
+    ls;
+}

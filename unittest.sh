@@ -2,8 +2,8 @@
 
 # opts
 test_suite_dir=$1;
-debug=false
-enable_test_output=false
+debug=0
+enable_test_output=0
 
 # suite global
 test_case_pattern=test_case*.sh
@@ -15,6 +15,7 @@ list_tests(){
 
 run_function(){
     local name=$1;
+    echo -n .;
     if(($debug)); then
         echo "  Running function: $name";
     fi;
@@ -46,6 +47,7 @@ run_test_case(){
         unittest_current_function=$t;
         run_function $t;
     done;
+    echo
     echo We have \#$unittest_error_count errors;
     echo Errors: $unittest_error_function_list;
 }
@@ -91,6 +93,33 @@ assert_less_than_or_equal(){
 assert_greater_than_or_equal(){
     echo TODO;
 }
+
+_mocked(){
+    local cmd=$1;
+    shift;
+
+    local len=$(($#-1))
+    local echo_=${@:1:$len}
+    shift $len;
+
+    local ret=$1;
+    
+    echo "${echo_}";
+    return $ret;
+}
+
+build_mock(){
+    local cmd=$1;
+    eval "$cmd(){
+        _mocked \"$1\" \"$2\" $3;
+        return \$?;
+    }";
+}
+
+unmock(){
+    unset -f $1;
+}
+
 
 if [ "${test_suite_dir}" != "" ]; then
     run_test_suite $test_suite_dir;
